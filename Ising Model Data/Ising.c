@@ -114,9 +114,9 @@ void random_process_of_flipping(float Temperature, int **sigma, int N, int numbe
 	free(p);
 }
 
-void output(int **sigma, int N){
+void output(int **sigma, int N, char *order){
 	int i,j;
-	FILE *fp=fopen("output.csv","w");
+	FILE *fp=fopen(order,"w");							//gcc: Not have to transfer char* to string for output !
 	for(i=1;i<N-1;i++){
 		for(j=1;j<N-1;j++){
 			fprintf(fp, "%d,%d,%d\n",i,j,sigma[i][j]);		
@@ -130,10 +130,12 @@ int main(int argc, char* argv[]){						//run with external parameters
 	int Temperature = 3;
 	int cycle = 2000;
 	int N = 12;
+	char* order;
+
 
 	for(i=0;i<argc;i++){								//read all parameters
 		if(strcmp(argv[i],"-h")==0){
-			printf("\nUseage: ./Ising [Options]\nOptions:\n-h         \tList the help\n-n [number]\tSize of lattice. Default value is 10\n-c [number]\tTime for heating. Default value is 2000");
+			printf("\nUseage: ./Ising [Options]\nOptions:\n-h         \tList the help\n-n [number]\tSize of lattice. Default value is 10\n-c [number]\tTime for heating. Default value is 2000\n-o\tOutput order of File. No default value !");
 			exit(0);
 		}
 		if(strcmp(argv[i],"-n")==0)						//compare two string (non-sensible on capital)
@@ -143,6 +145,9 @@ int main(int argc, char* argv[]){						//run with external parameters
 			cycle = atoi(argv[i+1]);					//time of heating (drop configurations at early time) to gaurantee reaching the equilibrium 
 		if(strcmp(argv[i],"-t")==0)
 			Temperature = atoi(argv[i]);				
+		if(strcmp(argv[i],"-o")==0){
+			order = argv[i+1];
+		}
 	}
 
 	int **sigma = (int **)malloc(N*sizeof(int *));
@@ -152,7 +157,7 @@ int main(int argc, char* argv[]){						//run with external parameters
 
 	lattice_random_intialize(sigma, N);
 	random_process_of_flipping(Temperature, sigma, N, cycle);
-	output(sigma,N);
+	output(sigma,N,order);
 
 	return 0;
 }

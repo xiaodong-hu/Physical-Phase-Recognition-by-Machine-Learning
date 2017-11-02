@@ -10,6 +10,11 @@ if os.path.exists('data'):
 else:
     os.mkdir('data')
 
+
+os.system('cp Ising data/Ising')
+work_directory = os.getcwd()
+os.chdir(work_directory+'/data') # change directory to /data
+
 size = input('Input the size of lattice:(default is 10)\n')
 cycle = input('Input the time reaching equilibrium:(default is 2000)\n')
 temperature_low = input('Input the starting low temperature:')
@@ -18,17 +23,22 @@ number = input('Input the number of configuration you want to generate:\n')
 
 delta_T = ((float)(temperature_high)-(float)(temperature_low))/(float)(number)
 
-pool = mp.Pool(8)
-
 def run(i):
     T = str((float)(temperature_low) + (float)(i)*delta_T)
-    os.system('./Ising'+' -n '+size+' -c '+cycle+' -t '+T)
-    if (i+1)%50 == 0:
-        print('{}\tdata has been generated!'.format(i+1))
-    os.system('mv output.csv'+' '+'data/output'+str(i)+'.csv')
+    output_order = str(i)
+    os.system('./Ising'+' -n '+size+' -c '+cycle+' -t '+T+' -o '+output_order)
+    #if (i+1)%50 == 0:
+    #    print('{}\tdata has been generated!'.format(i+1))
 
-pool.map(run,range(int(number)))
+def move(i):
+    order = str(i);
+    os.system('mv '+order+' '+'data/'+order+'.csv')
 
-#def move_to_data(i):
 
-#pool.map(move_to_data,range(int(number)))
+if __name__ == "__main__":
+    pool = mp.Pool(processes=8)
+    pool.map(run,range(int(number)))
+    pool.close()
+    pool.join()
+
+os.system('rm Ising') # delete the moved temporary executable file
