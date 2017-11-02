@@ -32,12 +32,13 @@ def run(i):
 
 def move(i):
     order = str(i);
-    os.system('mv '+order+' '+'data/'+order+'.csv')
+    os.system('mv '+order+' '+order+'.csv')
 
 
 if __name__ == "__main__":
     pool = mp.Pool(processes=8)
     pool.map(run,range(int(number)))
+    pool.map(move,range(int(number)))
     pool.close()
     pool.join()
 
