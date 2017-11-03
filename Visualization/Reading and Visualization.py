@@ -8,24 +8,32 @@ def read(i,data):
 		for row in reader:
 			data.append(row)
 
+def magnetization(data):
+	m = 0
+	for i in range(2500):
+		m += int(data[i][2])
+	return abs(m/2500)
+
+
 if __name__ == "__main__":
 	data = []
 	os.chdir(os.path.pardir)	# temporarily change the work directory to father directory
 	path = 'Ising Model Data/data'
 	os.chdir(path)
-	#print(os.getcwd())
-	N = os.listdir()			# count the number of generated files
-#	for i in range(N):
-#		read(i,data)
-	read(3,data)
-#	read(501,data)
-	#print(data)
 
+	N = os.listdir()			# count the number of generated files
+
+	#i = int(input('Input the data you want to study:\n'))
+	for i in range(1000):
+		read(i,data)
+		T = 1.0 + i*(3.0-1.0)/1000.0;
+		print('T = {:.3}\t\tM = {:.3}'.format(T,magnetization(data)))
+		data = []
+'''
 	x = []
 	y = []
 
 	for i in range(2500):
-		print(i)
 		if data[i][2] == '1':
 			x.append(int(data[i][0]))	#Note that
 			y.append(int(data[i][1]))
@@ -39,3 +47,4 @@ if __name__ == "__main__":
 	plt.ylim((0,50))
 
 	plt.show()
+'''
