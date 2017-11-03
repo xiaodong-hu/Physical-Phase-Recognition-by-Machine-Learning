@@ -17,14 +17,14 @@ if __name__ == "__main__":
 	N = os.listdir()			# count the number of generated files
 #	for i in range(N):
 #		read(i,data)
-	read(99,data)
+	read(3,data)
 #	read(501,data)
 	#print(data)
 
 	x = []
 	y = []
 
-	for i in range(10000):
+	for i in range(2500):
 		print(i)
 		if data[i][2] == '1':
 			x.append(int(data[i][0]))	#Note that
@@ -35,7 +35,7 @@ if __name__ == "__main__":
 	#print(x)
 	#print(y)
 	plt.scatter(x,y)
-	plt.xlim((0,100))
-	plt.ylim((0,100))
+	plt.xlim((0,50))
+	plt.ylim((0,50))
 
 	plt.show()

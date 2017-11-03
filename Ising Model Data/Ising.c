@@ -15,7 +15,7 @@ sigma[N][j]=sigma[1][i]
 sigma[0][0]=sigma[0][N]=sigma[N][0]=sigma[N][N]=0 (futile)
  */
 
-float* shrage_random_generator(long number, float minima, float maxima){
+float* shrage_random_generator(long number, float minima, float maxima, int seed){
 	int i;
 	const int a = 16807;
 	const int m = pow(2,31) - 1;
@@ -23,8 +23,8 @@ float* shrage_random_generator(long number, float minima, float maxima){
 	const int r = m%a;
 	//printf("m=%d\nq=%d\nr=%d",m,q,r);
 	float *I = (float*)malloc(number*sizeof(float));
-	srand((unsigned int)time(NULL));					//Initialize the seed
-	I[0] = (float)(rand()%m);
+	//srand((unsigned int)time(NULL));					//Initialize the seed
+	I[0] = (float)(seed);											//(float)(rand()%m);
 	for(i=1; i<number; i++){
 		I[i] = (float)(a)*((int)(I[i-1])%q) - r*floor(I[i-1]/(float)(q));		//see 丁泽军
 		if(I[i]>=0)
@@ -37,10 +37,10 @@ float* shrage_random_generator(long number, float minima, float maxima){
 	return I;
 }
 
-void lattice_random_intialize(int **sigma, int N){		//Randomly initialize spin distribution 
+void lattice_random_intialize(int **sigma, int N, int seed){		//Randomly initialize spin distribution 
 	int i, j;
 	float *init = (float *)malloc(N*N*sizeof(float));
-	init = shrage_random_generator(N*N, -1.0, 1.0);
+	init = shrage_random_generator(N*N, -1.0, 1.0, seed);
 	for(i=0;i<N;i++){
 		for(j=0;j<N;j++){
 			sigma[i][j] = 0;
@@ -75,11 +75,11 @@ void lattice_random_intialize(int **sigma, int N){		//Randomly initialize spin d
 	free(init);
 }
 
-void random_process_of_flipping(float Temperature, int **sigma, int N, int number_of_flipping_cycle){	//Evolving of spin flipping for many cycles
+void random_process_of_flipping(float Temperature, int **sigma, int N, int number_of_flipping_cycle, int seed){	//Evolving of spin flipping for many cycles
 	int i,j,k;
 	int delta_E;
 	float *p=NULL;
-	p = shrage_random_generator(N*N*number_of_flipping_cycle, 0.0, 1.0);
+	p = shrage_random_generator(N*N*number_of_flipping_cycle, 0.0, 1.0, seed);
 	for(k=0;k<number_of_flipping_cycle;k++){			 
 		for(i=1;i<N-1;i++){								//Attemp to flip by turns
 			for(j=1;j<N-1;j++){
@@ -131,7 +131,7 @@ int main(int argc, char* argv[]){						//run with external parameters
 	int cycle = 2000;
 	int N = 12;
 	char* order;
-
+	int seed;
 
 	for(i=0;i<argc;i++){								//read all parameters
 		if(strcmp(argv[i],"-h")==0){
@@ -147,6 +147,7 @@ int main(int argc, char* argv[]){						//run with external parameters
 			Temperature = atoi(argv[i]);				
 		if(strcmp(argv[i],"-o")==0){
 			order = argv[i+1];
+			seed = atoi(argv[i+1]) + 1;
 		}
 	}
 
@@ -155,8 +156,8 @@ int main(int argc, char* argv[]){						//run with external parameters
 		sigma[i] = (int *)malloc(N*sizeof(int));
 	}
 
-	lattice_random_intialize(sigma, N);
-	random_process_of_flipping(Temperature, sigma, N, cycle);
+	lattice_random_intialize(sigma, N, seed);
+	random_process_of_flipping(Temperature, sigma, N, cycle, seed);
 	output(sigma,N,order);
 
 	return 0;
