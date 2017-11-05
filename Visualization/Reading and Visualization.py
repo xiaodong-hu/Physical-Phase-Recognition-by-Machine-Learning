@@ -24,11 +24,26 @@ if __name__ == "__main__":
 	N = os.listdir()			# count the number of generated files
 
 	#i = int(input('Input the data you want to study:\n'))
-	for i in range(1000):
+
+
+	x = []
+	y = []
+	
+	for i in range(1000):	
 		read(i,data)
-		T = 1.0 + i*(3.0-1.0)/1000.0;
-		print('T = {:.3}\t\tM = {:.3}'.format(T,magnetization(data)))
+		T = 1.0 + i*(4.0-1.0)/1000.0;
+		x.append(T)
+		y.append(magnetization(data))
+		#print('T = {:.3}\t\tM = {:.3}'.format(T,magnetization(data)))
 		data = []
+	
+
+	plt.scatter(x,y)
+	# plt.xlim((0,50))
+	# plt.ylim((0,50))
+
+	plt.show()
+
 '''
 	x = []
 	y = []
