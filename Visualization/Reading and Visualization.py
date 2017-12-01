@@ -18,20 +18,19 @@ def magnetization(data):
 if __name__ == "__main__":
 	data = []
 	os.chdir(os.path.pardir)	# temporarily change the work directory to father directory
-	path = 'Ising Model Data/data'
-	os.chdir(path)
+	path_training = 'Ising Model Data/data/training'
+	os.chdir(path_training)
 
 	N = os.listdir()			# count the number of generated files
 
-	#i = int(input('Input the data you want to study:\n'))
-
+	i = int(input('Input the data you want to study:\n'))
 
 	x = []
 	y = []
 	
 	for i in range(1000):	
 		read(i,data)
-		T = 1.0 + i*(4.0-1.0)/1000.0;
+		T = 2.3 + i*(3.2-2.3)/1000.0;
 		x.append(T)
 		y.append(magnetization(data))
 		#print('T = {:.3}\t\tM = {:.3}'.format(T,magnetization(data)))
