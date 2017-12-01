@@ -71,8 +71,8 @@ if __name__ == "__main__":
 	os.chdir(os.path.pardir)	# go back to /Ising Model Data/data
 	os.chdir(os.path.pardir)	# go back to /Ising Model Data
 	os.chdir(os.path.pardir)	# go back to 数据挖掘导论课题
-	path_phase = 'Phase Recognition in Ising Model'
-	os.chdir(path_phase)		# go to /Phase Recognition is Ising Model
+	path_phase = 'Phase Recognition of Ising Model'
+	os.chdir(path_phase)		# go to /Phase Recognition of Ising Model
 	if os.path.exists('log'):
 		os.system('rm -r log')	# delete the existed /log
 
