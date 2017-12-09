@@ -43,7 +43,12 @@ python "Reading and Visualization.py"
 
 ## Phase Recognition of Ising Model
 Use ```tensorflow (1.4.0 version)``` to learn to recognize phases (labeled manually) and ```Tensorboard``` to visualize the training results.
+
+### Simple Fully Connected NN
+
 ```python
-python "Phase Recongition.py"
+python "Phase Recongition-Fully Connnected.py"
 ```
-Test module has not been successfully added yet, let alone the planned unsupervised learning of phases
+### CNN
+
+Undo
