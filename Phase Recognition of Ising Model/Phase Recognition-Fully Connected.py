@@ -8,6 +8,7 @@ import numpy as np
 import math
 import csv
 import os
+import random
 
 def configuration_read(file_name):
 	data = []
@@ -34,6 +35,7 @@ def data_read(data_path,tensor_x,tensor_y):
 	os.chdir(os.path.pardir)		# go to /数据挖掘导论
 	os.chdir(data_path)				# go to /Ising Model Data/data
 	list_of_filename = os.listdir()	# LIST of data's filename
+	random.shuffle(list_of_filename)# shuffle the list, Important!
 
 	lattice_size = len(open(list_of_filename[0],'rU').readlines())
 	# each file has the same lattice; Here we choose the first file as one example
@@ -81,16 +83,24 @@ if __name__ == "__main__":
 		spins = tf.placeholder(tf.float32,[None, lattice_size*lattice_size])	# None indicate the mini-batch
 		phases = tf.placeholder(tf.float32,[None, 2])							# None indicate the mini-batch
 		# Add physics knowledge: two phases
-
-	with tf.variable_scope('Layers'):
+	'''
+	with tf.variable_scope('Effective Layers'):
 		layer_one = tf.layers.dense(inputs = spins, units = 3, activation = tf.nn.relu, name = 'layer_one')
 		outputs = tf.layers.dense(inputs = layer_one, units = 2, activation = tf.nn.sigmoid, name = 'output_layer')
 		tf.summary.histogram('layer_one', layer_one)
 		tf.summary.histogram('output_layer', outputs)
+	'''
+	with tf.variable_scope('Layers'):
+		layer_one = tf.layers.dense(inputs = spins, units = 10, activation = tf.nn.relu, name = 'layer_one')
+		layer_two = tf.layers.dense(inputs = layer_one, units = 5, activation = tf.nn.relu, name = 'layer_two')
+		outputs = tf.layers.dense(inputs = layer_two, units = 2, activation = tf.nn.sigmoid, name = 'output_layer')
+		tf.summary.histogram('layer_one', layer_one)
+		tf.summary.histogram('layer_one', layer_two)
+		tf.summary.histogram('output_layer', outputs)
 
 	with tf.variable_scope('Training'):
 		training_loss = tf.losses.mean_squared_error(phases, outputs, scope='traing_loss')
-		train_operation = tf.train.GradientDescentOptimizer(learning_rate=0.5).minimize(training_loss)
+		train_operation = tf.train.GradientDescentOptimizer(learning_rate=0.1).minimize(training_loss)
 		tf.summary.scalar('training_loss', training_loss)						# add loss to scalar summary
 
 	with tf.name_scope('Accuracy'):
@@ -121,37 +131,38 @@ if __name__ == "__main__":
 		test_writer = tf.summary.FileWriter(log_dir + '/test')  
 		print('\n')
 
-		# Training Cycle
-		tensor_x = []	
-		tensor_y = []
-		training_number = data_read(path_data_training_set,tensor_x,tensor_y)	# read training data
+		# data reading
+		tensor_x_training = []	
+		tensor_y_training = []
+		training_number = data_read(path_data_training_set,tensor_x_training,tensor_y_training)	# read training data
+		tensor_x_test = []	
+		tensor_y_test = []
+		test_number = data_read(path_data_test_set,tensor_x_test,tensor_y_test)	# read training data
+
 		# Read and Store spin configurations and magnetization for training use
 		# No need to manual transform tensor_x and tensor_y inteo np.array() type
 		epoches = int(input('Input the training epoch: '))
-		epoches = min(epoches,math.floor(training_number/batchsize))
+		epoches = min(epoches,
+					math.floor(training_number/batchsize),
+					math.floor(test_number/batchsize))
 		# allowed integer is chosen to be the epoch
-		print('batch size = {}\n'.format(batchsize))
+		print('batch size = {}'.format(batchsize))
+		
 		for step in range(epoches):
-			feeds ={spins: tensor_x[batchsize*step:batchsize*(step+1)], phases: tensor_y[batchsize*step:batchsize*(step+1)]}
-			loss, results, _ = sess.run([training_loss, merge_operation,train_operation], feed_dict=feeds)
-			train_writer.add_summary(results, step)
-			if step%20 == 0:
-				print('{} batches have been trained, losses {}'.format(step,loss))
 
-		print('\n')
-		# Test Cycle
-		tensor_x = []
-		tensor_y = []
-		test_number = data_read(path_data_test_set,tensor_x,tensor_y)
-		# Read and Store spin configurations and magnetization for testing
-		# No need to manual transform tensor_x and tensor_y inteo np.array() type
-		epoches = int(input('Input the training epoch: '))
-		epoches = min(epoches,math.floor(test_number/batchsize))
-		# allowed integer is chosen to be the epoch
-		for step in range(epoches):
-			feeds ={spins: tensor_x[batchsize*step:batchsize*(step+1)], phases: tensor_y[batchsize*step:batchsize*(step+1)]}
-			# Use the trained parameter to check for test set
-			accuracy, results = sess.run([acc,merge_operation], feed_dict=feeds)
+			# Training Cycles
+			training_feeds = {spins: tensor_x_training[batchsize*step:batchsize*(step+1)], 
+							phases: tensor_y_training[batchsize*step:batchsize*(step+1)]}
+			loss, results, _ = sess.run([training_loss, merge_operation, train_operation], feed_dict=training_feeds)
+			train_writer.add_summary(results, step)
+			#print('loss {}'.format(loss))
+
+			# Testing Cycles
+			test_feeds = {spins: tensor_x_test[batchsize*step:batchsize*(step+1)], 
+						phases: tensor_y_test[batchsize*step:batchsize*(step+1)]}
+			results, accuracy = sess.run([merge_operation, acc], feed_dict=test_feeds)
 			test_writer.add_summary(results, step)
-			if step%20 == 0:
-				print('{} batches have been tested, accuracy {}'.format(step,accuracy))
+			#print('test accuracy {}'.format(accuracy))
+			if step%10 == 0:
+				print('step {}, \ttrainging losses {:.3f}\ttesting accuracy {:.3f}'.format(step,loss,accuracy))	
+				
