@@ -17,23 +17,11 @@ Final Project of the class 数据科学导论
 - (Not finished yet) Predict to use **k-means** algorithm
 
 ## Topological Phase Recongition by CNN
-- Seems to have not enough time to finish
+- Seems not to have enough time to finish
 
-# Usage
+## Note
 
-All codes are checked on my **Archlinux** but **not on Windows**, so there may be some fatal errors that you need to debug youself...
-
-## Ising Model Data
-Data generation by Monte Carlo costs long time, so this module is written by ```C``` and **parallel scheduled** by ```python```.
-If you wanna generate one configuration for test,
-```shell
-./Ising -n (size) -c (cycles to reach equilibrium) -t (temperature) -o (output name)
-```
-If you wanna generate large number of files,
-```python
-python data_generator.py
-```
-Note that data is automatically and randomly divided by two parts: training set, and test set.
+All codes are checked on my **Archlinux** but **not on Windows**, and since I invoke many system-related commands (```os``` package), so there must be many fatal errors if you run them on windows.
 
 ## Visualization
 Comput and draw all the magnetization of training set to visualize the phase transition structure, this is just for data check and not related to our main tasks. So I roughly wrote the code and it may need to be modified for your generated data
