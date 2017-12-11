@@ -1,0 +1,48 @@
+\documentclass[prl,aps,twocolumn]{revtex4}
+%\usepackage{ctex}
+\usepackage{mathrsfs,amssymb,amsfonts,amsmath,bm}
+\usepackage{tikz}
+
+
+%%%%%%%%%%%%%%%%%正体微分%%%%%%%%%%%%%%%%%%
+\newcommand*\dd{\mathop{}\!\mathrm{d}}
+\newcommand*\ddd[1]{\mathop{}\!\mathrm{d^#1}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%方程按节编号%%%%%%%%%%
+%\numberwithin{equation}{section}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{document}
+\draft
+
+\title{Landau-Ginzberg Effective Fields Theory on Deep Neural Network}
+\author {Xiaodong Hu, PB14203081}
+\affiliation{
+Department of Modern Physics, University of Science and Technology of China, Anhui, Heifei
+\\
+\url{cdqz2014@mail.ustc.edu.cn}}
+\date{\today}
+
+\begin{abstract}
+Deep neural network (DNN) works in an amazing effeciency in machine learing but cannot be well-explained by accurate mathematics. Reviewing the one-to-one correspondence between Restricted Boltzmann machines (RBM) and configuration space renomalization groups (RG), the well-developed techniques in studying quantum fields theory (QFT), we are motivated to apply the effective fields theory, particularly Landau-Ginzberg one, to explain the expressibility and mechnism of a general DNN. Similar structures of the effective Hamiltionian are discovered, and we propose a new model based on the systematic cluster expansion approach to improve the performance of DNN without adding extra layer. Supported by the high efficiency in counting low orders Feynman diagrams in computation of scattering amplitute by QFT, the upgrade of DNN we propose is believed to provide a higher efficiency than extending the depth of DNN if the coarse graining procedure has neared the fixed point of RG flows.
+
+\end{abstract}
+
+\pacs{}
+\maketitle
+
+\section{Data Preparation - Monte-Carlo Methods}
+	All the interacting and evolving processes in statistical mechanics are \emph{Markov processes}. But a mathematical theorem in stochastic process, we can awalys reach the equilibrim point at arbitrary initial value.
+\section{Neural Network Model}
+	\subsection{Shallow Effective NN}
+
+	\subsection{Deep NN}
+
+\section{Training Discussion}
+	\subsection{Appropriate Choice of Mini-batch and Epoch}
+	\subsection{Optimization of the Test Accuracy}
+	\subsection{Performance under Thermodynamic Limit}
+
+\end{document}
