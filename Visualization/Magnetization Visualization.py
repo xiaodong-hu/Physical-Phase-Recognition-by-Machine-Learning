@@ -3,6 +3,7 @@ import os
 import matplotlib.pyplot as plt
 import re
 import shutil
+import multiprocessing as mp
 
 
 def configuration_read(file_name):
@@ -52,11 +53,37 @@ def visualization(lattice_size, file_number):
 		x.append(T)
 		y.append(magnetization(spin_data, lattice_size))
 		i = i + 1
-		plt.scatter(x,y)
+		plt.plot(x,y,'bo')
+		plt.title('Lattice Size '+str(lattice_size))
 		#sns.lmplot("x","y",data=pd_res,fit_reg=False,size=5,hue="")
 	#print(x)
 	#print(y)
 	plt.show()
+
+def run(dirname):
+
+	os.chdir(dirname)					# go to /Ising Model Data/data/dirname
+
+	if os.path.isdir('draw'):			# check /draw is existed or not
+		shutil.rmtree('draw')
+
+	os.system('mkdir draw')
+	os.system('cp -frap training\ set/* draw/')
+	os.system('cp -frap test\ set/* draw/')
+
+	draw_data_path = 'draw'
+	os.chdir(draw_data_path)		# go to /Ising Model Data/data/dirname/training set
+	file_number = len(os.listdir())
+	lattice_size = re.sub('\D','',dirname)	# get all number in char
+	#print(lattice_size)
+	visualization(int(lattice_size), file_number)
+	os.chdir(os.path.pardir)			# go back to /Ising Model Data/data/dirname
+
+	if os.path.isdir('draw'):			# check /draw is existed or not
+		shutil.rmtree('draw')
+
+	os.chdir(os.path.pardir)			# go back to /Ising Model Data/data
+
 
 if __name__ == "__main__":
 
@@ -65,28 +92,8 @@ if __name__ == "__main__":
 	os.chdir(data_path)						# go to /Ising Model Data/data
 	lattice_name_list = os.listdir()		# list all files
 	
-	for dirname in lattice_name_list:
-		os.chdir(dirname)					# go to /Ising Model Data/data/dirname
-
-		if os.path.isdir('draw'):			# check /draw is existed or not
-			shutil.rmtree('draw')
-
-		os.system('mkdir draw')
-		os.system('cp -frap training\ set/* draw/')
-		os.system('cp -frap test\ set/* draw/')
-
-		draw_data_path = 'draw'
-		os.chdir(draw_data_path)		# go to /Ising Model Data/data/dirname/training set
-		file_number = len(os.listdir())
-		lattice_size = re.sub('\D','',dirname)	# get all number in char
-		#print(lattice_size)
-		visualization(int(lattice_size), file_number)
-		os.chdir(os.path.pardir)			# go back to /Ising Model Data/data/dirname
-
-		if os.path.isdir('draw'):			# check /draw is existed or not
-			shutil.rmtree('draw')
-
-		os.chdir(os.path.pardir)			# go back to /Ising Model Data/data
+	pool = mp.Pool(processes=8)
+	pool.map(run, lattice_name_list)
 
 
 '''
