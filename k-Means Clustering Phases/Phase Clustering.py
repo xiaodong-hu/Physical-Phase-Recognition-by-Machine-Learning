@@ -3,6 +3,7 @@ import shutil
 import os
 import numpy as np
 import csv
+import multiprocessing as mp
 from numpy.linalg import cholesky
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -153,62 +154,61 @@ def cluster(lattice_size, file_number):
 	#plt.plot(data[:,0],data[:,1],'bo')
 
 	k = 2
-	center,result = KMeansCluster(data,k)
-    #print center 
-    ############利用seaborn画图###############
-
-	res={"x":[],"y":[],"kmeans_res":[]}
+	'''
+	test = pd.DataFrame()
+	test['Temperature']=[1,2,3,4,5]
+	test['Magnetization']=[3,4,2,5,1]
+	test['z']=[1,0,1,0,1]
+	sns.lmplot('Temperature','Magnetization',data=test, size=5, hue='z', fit_reg=False)
+	fit_reg=False means no fitting
+	plt.show()
+	'''
+	center,result = KMeansCluster(data, k)
+	#print center 
+	############利用seaborn画图###############
+	
+	test={"Temperature":[],"Magnetization":[],"Phases":[]}
 	for i in range(len(result)):
-		res["x"].append(data[i][0])
-		res["y"].append(data[i][1])
-		res["kmeans_res"].append(result[i])
-	pd_res=pd.DataFrame(res)
-	sns.lmplot("x","y",data=pd_res,fit_reg=False,size=5,hue="kmeans_res")
+		test["Temperature"].append(data[i][0])
+		test["Magnetization"].append(data[i][1])
+		test["Phases"].append(result[i])
+	pd_test=pd.DataFrame(test)
+	sns.lmplot("Temperature","Magnetization",data=pd_test,fit_reg=False,size=5,hue="Phases")
 	plt.show()
 
+def run(dirname):
+
+	os.chdir(dirname)					# go to /Ising Model Data/data/dirname
+
+	if os.path.isdir('cluster'):			# check /draw is existed or not
+		shutil.rmtree('cluster')
+
+	os.system('mkdir cluster')
+	os.system('cp -frap training\ set/* cluster/')
+	os.system('cp -frap test\ set/* cluster/')
+
+	cluster_data_path = 'cluster'
+	os.chdir(cluster_data_path)		# go to /Ising Model Data/data/dirname/training set
+	file_number = len(os.listdir())
+	lattice_size = re.sub('\D','',dirname)	# get all number in char
+	#print(lattice_size)
+	cluster(int(lattice_size), file_number)
+	os.chdir(os.path.pardir)			# go back to /Ising Model Data/data/dirname
+
+	if os.path.isdir('cluster'):			# check /cluster is existed or not
+		shutil.rmtree('cluster')
+
+	os.chdir(os.path.pardir)			# go back to /Ising Model Data/data
+
+
+
 if __name__ == '__main__':
-	'''
-    ############生成测试数据###############
-    sampleNo = 200;#数据数量
-    mu =3
-    # 二维正态分布
-    mu = np.array([[1, 5]])
-    Sigma = np.array([[1, 0.5], [1.5, 3]])
-    R = cholesky(Sigma)
-    srcdata= np.dot(np.random.randn(sampleNo, 2), R) + mu
-    #print(type(srcdata))
-    '''
+
     #os.system('mkdir /clustered\ data')
 	os.chdir(os.path.pardir)	# temporarily change the work directory to /数据挖掘导论
 	data_path = 'Ising Model Data/data/'
 	os.chdir(data_path)						# go to /Ising Model Data/data
 	lattice_name_list = os.listdir()		# list all files
 
-	for dirname in lattice_name_list:
-		os.chdir(dirname)					# go to /Ising Model Data/data/dirname
-
-		if os.path.isdir('cluster'):			# check /draw is existed or not
-			shutil.rmtree('cluster')
-
-		os.system('mkdir cluster')
-		os.system('cp -frap training\ set/* cluster/')
-		os.system('cp -frap test\ set/* cluster/')
-
-		cluster_data_path = 'cluster'
-		os.chdir(cluster_data_path)		# go to /Ising Model Data/data/dirname/training set
-		file_number = len(os.listdir())
-		lattice_size = re.sub('\D','',dirname)	# get all number in char
-		#print(lattice_size)
-		cluster(int(lattice_size), file_number)
-		os.chdir(os.path.pardir)			# go back to /Ising Model Data/data/dirname
-
-		if os.path.isdir('cluster'):			# check /cluster is existed or not
-			shutil.rmtree('cluster')
-
-		os.chdir(os.path.pardir)			# go back to /Ising Model Data/data
-
-	'''
-    plt.plot(srcdata[:,0],srcdata[:,1],'bo')
-    ############kmeans算法计算###############
-    
-    '''
+	pool = mp.Pool(processes=8)
+	pool.map(run, lattice_name_list)
