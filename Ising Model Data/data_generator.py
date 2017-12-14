@@ -30,7 +30,7 @@ def parallel_generate(size):
     # prepare multi-argument mapping
     # cf. https://stackoverflow.com/questions/5442910/python-multiprocessing-pool-map-for-multiple-arguments for details
     parameter_list = [(i, size) for i in range(int(number))]
-    pool.starmap(run, parameter_list)                                       # Parallel generation
+    pool.starmap(run, parameter_list)                               # Parallel generation
     
 
 def move_to_test_set(i, path):
@@ -75,12 +75,12 @@ if __name__ == "__main__":
     size_up = input('Input the Maximum size of lattice:(default is 20)\n')
     size_step = input('Input the step size:(default is 5)\n')
     cycle = input('Input the time reaching equilibrium:(default is 2000)\n')
-    temperature_low = input('Input the starting low temperature:')
-    temperature_high = input('Input the final high temperature:')
-    number = input('Input the number of configuration you want to generate:\n')
-    propotion = input('Input the propotion of the generated date you want them belonging to the TRAINING SET:')
+    temperature_low = input('Input the starting low temperature:(default is 2.0)\n')
+    temperature_high = input('Input the final high temperature:(default is 2.5)\n')
+    number = input('Input the number of configuration you want to generate:(default is 1000)\n')
+    propotion = input('Input the propotion the training set shares:\n')
     while float(propotion)>1 or float(propotion)<0:
-        propotion = input('Propotion of the Training Set must range from zero to one, Please reinput it:')
+        propotion = input('The propotion of training set ranges from zero to one, Please reinput it:')
     print('\n\n')
 
     os.system('cp Ising data/Ising')                # Temporarily copy file Ising to /data/Ising
