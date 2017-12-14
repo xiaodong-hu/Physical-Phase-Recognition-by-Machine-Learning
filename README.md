@@ -19,7 +19,7 @@ Final Project of the class 数据科学导论
 - (Not finished yet, actually I wonder if this is necessary 2333...)
 
 ## Unsupervied Learning to distinguish high-T and Low-T phases
-- (Not finished yet) Predict to use **k-means** algorithm
+- **k-means** Algorithm
 
 ## Note
 
