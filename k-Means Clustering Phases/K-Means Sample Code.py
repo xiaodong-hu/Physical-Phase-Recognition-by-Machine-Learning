@@ -119,7 +119,7 @@ if __name__ == '__main__':
     R = cholesky(Sigma)
     srcdata= np.dot(np.random.randn(sampleNo, 2), R) + mu
 
-    '''
+    
     plt.plot(srcdata[:,0],srcdata[:,1],'bo')
     ############kmeans算法计算###############
     k=2
@@ -135,4 +135,4 @@ if __name__ == '__main__':
     pd_res=pd.DataFrame(res)
     sns.lmplot("x","y",data=pd_res,fit_reg=False,size=5,hue="kmeans_res")
     plt.show()
-    '''
+    

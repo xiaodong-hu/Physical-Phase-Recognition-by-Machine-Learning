@@ -124,7 +124,7 @@ def magnetization(spin_data,lattice_size):
 	spin_sum = sum(spin_data)		# spin[i] is a list of 1-d spin configuration
 	return abs(spin_sum/(lattice_size*lattice_size))
 
-def cluster(lattice_size, file_number):
+def cluster(k, lattice_size, file_number):
 	# work only in `training set` directory
 
 	T_max = 4.0
@@ -153,7 +153,9 @@ def cluster(lattice_size, file_number):
 	data = np.transpose(np.array(data))
 	#plt.plot(data[:,0],data[:,1],'bo')
 
-	k = 2
+	center,result = KMeansCluster(data, k)
+	
+	# seaborn test
 	'''
 	test = pd.DataFrame()
 	test['Temperature']=[1,2,3,4,5]
@@ -163,9 +165,7 @@ def cluster(lattice_size, file_number):
 	fit_reg=False means no fitting
 	plt.show()
 	'''
-	center,result = KMeansCluster(data, k)
-	#print center 
-	############利用seaborn画图###############
+	# seaborn draw
 	
 	test={"Temperature":[],"Magnetization":[],"Phases":[]}
 	for i in range(len(result)):
@@ -174,13 +174,16 @@ def cluster(lattice_size, file_number):
 		test["Phases"].append(result[i])
 	pd_test=pd.DataFrame(test)
 	sns.lmplot("Temperature","Magnetization",data=pd_test,fit_reg=False,size=5,hue="Phases")
+	plt.title('Lattice Size '+str(lattice_size))
 	plt.show()
+	
 
-def run(dirname):
+
+def run(k, dirname):
 
 	os.chdir(dirname)					# go to /Ising Model Data/data/dirname
 
-	if os.path.isdir('cluster'):			# check /draw is existed or not
+	if os.path.isdir('cluster'):			# check /cluster is existed or not
 		shutil.rmtree('cluster')
 
 	os.system('mkdir cluster')
@@ -188,19 +191,22 @@ def run(dirname):
 	os.system('cp -frap test\ set/* cluster/')
 
 	cluster_data_path = 'cluster'
-	os.chdir(cluster_data_path)		# go to /Ising Model Data/data/dirname/training set
+	os.chdir(cluster_data_path)		# go to /Ising Model Data/data/dirname/cluster
 	file_number = len(os.listdir())
 	lattice_size = re.sub('\D','',dirname)	# get all number in char
 	#print(lattice_size)
-	cluster(int(lattice_size), file_number)
+	cluster(k, int(lattice_size), file_number)
 	os.chdir(os.path.pardir)			# go back to /Ising Model Data/data/dirname
 
 	if os.path.isdir('cluster'):			# check /cluster is existed or not
-		shutil.rmtree('cluster')
-
-	os.chdir(os.path.pardir)			# go back to /Ising Model Data/data
-
-
+		os.chdir(os.path.pardir)			# go back to /Ising Model Data/data
+		os.chdir(os.path.pardir)			# go back to /Ising Model Data/
+		os.chdir(os.path.pardir)			# go back to /数据挖掘导论
+		if os.path.isdir('k-Means\ Clustering\ Phases/"'+dirname+'"'):
+			shutil.rmtree('k-Means\ Clustering\ Phases/"'+dirname+'"')
+		else:
+			os.system('mkdir k-Means\ Clustering\ Phases/"'+dirname+'"')
+		os.system('mv -f Ising\ Model\ Data/data/"'+dirname+'"/cluster k-Means\ Clustering\ Phases/"'+dirname+'"')
 
 if __name__ == '__main__':
 
@@ -210,5 +216,8 @@ if __name__ == '__main__':
 	os.chdir(data_path)						# go to /Ising Model Data/data
 	lattice_name_list = os.listdir()		# list all files
 
+	k = 2			# Two clusters
+
 	pool = mp.Pool(processes=8)
-	pool.map(run, lattice_name_list)
+	parameter_list = [(k, i) for i in lattice_name_list]
+	pool.starmap(run, parameter_list)
