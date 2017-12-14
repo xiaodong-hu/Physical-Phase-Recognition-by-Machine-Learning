@@ -25,7 +25,7 @@ float* shrage_random_generator(long number, float minima, float maxima, int seed
 	//printf("m=%d\nq=%d\nr=%d",m,q,r);
 	float *I = (float*)malloc(number*sizeof(float));
 	//srand((unsigned int)time(NULL));					//Initialize the seed
-	I[0] = (float)(seed);											//(float)(rand()%m);
+	I[0] = (float)(float)(seed);							//rand()%m
 	for(i=1; i<number; i++){
 		I[i] = (float)(a)*((int)(I[i-1])%q) - r*floor(I[i-1]/(float)(q));		//see 丁泽军
 		if(I[i]>=0)
